@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Koleksi Game PSP — PSPZone</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#080c14" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="PSPZone" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #080c14;
+      --surface: #0e1420;
+      --border: #1c2640;
+      --gold: #f0c040;
+      --text: #dce6ff;
+      --muted: #6a7fa8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px,
+          rgba(0, 0, 0, 0.1) 2px, rgba(0, 0, 0, 0.1) 4px);
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+
+    .nav-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .nav-logo span {
+      color: var(--gold);
+    }
+
+    .nav-back {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-back:hover {
+      color: var(--gold);
+    }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: 40px 32px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 0%, rgba(240, 192, 64, 0.06), transparent 70%);
+    }
+
+    .page-header h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(22px, 5vw, 44px);
+      font-weight: 900;
+      color: #fff;
+      position: relative;
+    }
+
+    .page-header h1 span {
+      color: var(--gold);
+    }
+
+    .page-header p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+      font-family: 'Barlow Condensed', sans-serif;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    /* ── FILTERS ── */
+
+    /* ── SEARCH ── */
+
+    /* ── DIVIDER ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 32px 24px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+    }
+
+    .divider-line.right {
+      background: linear-gradient(90deg, transparent, var(--gold));
+    }
+
+    .divider-text {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* ── 9:16 COVER CARD ── */
+    .cover-card {
+      position: relative;
+      aspect-ratio: 9 / 16;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .cover-card:hover {
+      transform: translateY(-7px) scale(1.015);
+      border-color: rgba(240, 192, 64, 0.5);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.65), 0 0 40px rgba(240, 192, 64, 0.1);
+    }
+
+    .cover-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .cover-card:hover .cover-img {
+      transform: scale(1.05);
+    }
+
+    .cover-fallback {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: var(--surface);
+    }
+
+    .cover-fallback::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px dashed var(--border);
+    }
+
+    .cf-icon {
+      font-size: 40px;
+      opacity: 0.25;
+    }
+
+    .cf-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--muted);
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.8;
+      opacity: 0.6;
+    }
+
+    .cover-gradient {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 68%;
+      background: linear-gradient(to top,
+          rgba(4, 7, 14, 0.98) 0%, rgba(4, 7, 14, 0.85) 35%,
+          rgba(4, 7, 14, 0.35) 65%, transparent 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .cover-info {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 12px 12px 14px;
+      z-index: 2;
+    }
+
+    .cover-genre {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-family: 'Barlow Condensed', sans-serif;
+      margin-bottom: 3px;
+      opacity: 0.9;
+    }
+
+    .cover-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 10px;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+    }
+
+    .cover-btn-dl {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      width: 100%;
+      padding: 8px;
+      background: var(--gold);
+      color: #111;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s, box-shadow 0.2s;
+      margin-bottom: 5px;
+    }
+
+    .cover-btn-dl:hover {
+      background: #fff;
+      box-shadow: 0 0 20px rgba(240, 192, 64, 0.55);
+    }
+
+    .cover-btn-share {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      width: 100%;
+      padding: 6px 8px;
+      background: rgba(0, 0, 0, 0.55);
+      color: var(--gold);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: 1px solid rgba(240, 192, 64, 0.3);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      backdrop-filter: blur(4px);
+    }
+
+    .cover-btn-share:hover {
+      background: rgba(240, 192, 64, 0.14);
+      border-color: var(--gold);
+    }
+
+    .featured-ribbon {
+      position: absolute;
+      top: 14px;
+      right: -28px;
+      background: var(--gold);
+      color: #111;
+      font-family: 'Orbitron', monospace;
+      font-size: 7px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      padding: 5px 42px;
+      transform: rotate(35deg);
+      z-index: 10;
+    }
+
+    .featured-top-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: var(--gold);
+      color: #111;
+      font-family: 'Orbitron', monospace;
+      font-size: 7px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      padding: 3px 9px;
+      text-transform: uppercase;
+      z-index: 10;
+    }
+
+    /* ── GRIDS ── */
+    .highlight-row {
+      padding: 0 32px 48px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .games-section {
+      padding: 0 32px 64px;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 14px;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      letter-spacing: 2px;
+      display: none;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--gold);
+      color: #111;
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 12px 28px;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      transition: transform 0.3s ease;
+      z-index: 10000;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      font-family: 'Barlow Condensed', sans-serif;
+    }
+
+    footer span {
+      color: var(--gold);
+    }
+
+    /* ════════════════════════════════
+       INSTALL POPUP
+    ════════════════════════════════ */
+    #install-popup {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(0);
+      width: calc(100% - 32px);
+      max-width: 420px;
+      background: var(--surface);
+      border: 1px solid rgba(240, 192, 64, 0.35);
+      z-index: 8000;
+      display: none;
+      /* shown via JS */
+      user-select: none;
+      /* gold top accent */
+      box-shadow: 0 -2px 0 0 var(--gold), 0 16px 48px rgba(0, 0, 0, 0.7);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.35s ease;
+    }
+
+    #install-popup.visible {
+      display: flex;
+      animation: slideUp 0.4s cubic-bezier(0.34, 1.26, 0.64, 1) both;
+    }
+
+    #install-popup.swiping {
+      transition: none;
+      /* raw drag — no easing */
+    }
+
+    #install-popup.dismissing {
+      opacity: 0;
+      transform: translateX(calc(-50% + 120%));
+      pointer-events: none;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(100px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    .popup-inner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      width: 100%;
+    }
+
+    .popup-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(240, 192, 64, 0.1);
+      border: 1px solid rgba(240, 192, 64, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .popup-text {
+      flex: 1;
+      text-align: left;
+    }
+
+    .popup-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+      margin-bottom: 3px;
+    }
+
+    .popup-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .popup-sub span {
+      color: var(--gold);
+    }
+
+    .popup-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .btn-install {
+      padding: 8px 16px;
+      background: var(--gold);
+      color: #111;
+      font-family: 'Orbitron', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+      transition: background 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-install:hover {
+      background: #fff;
+      box-shadow: 0 0 18px rgba(240, 192, 64, 0.5);
+    }
+
+    .btn-dismiss {
+      padding: 6px 14px;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border: 1px dashed var(--border);
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .btn-dismiss:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .popup-steps {
+      margin-top: 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .pstep {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .pstep span {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    /* swipe hint bar */
+    .swipe-hint {
+      position: absolute;
+      top: 7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      opacity: 0.6;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .highlight-row {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        padding: 14px 16px;
+      }
+
+      .page-header,
+      .highlight-row,
+      .games-section,
+      .divider {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .highlight-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">PSP<span>ZONE</span></a>
+    <a href="index.html" class="nav-back">← Beranda</a>
+  </nav>
+
+  <div class="page-header">
+    <h1>Koleksi <span>Game PSP</span></h1>
+    <p>20 Game • Format ISO • Gratis Download</p>
+  </div>
+
+
+  <!-- FEATURED -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-text">⭐ Featured Games</span>
+    <div class="divider-line right"></div>
+  </div>
+  <div class="highlight-row" id="highlight-container"></div>
+
+  <!-- ALL GAMES -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-text" id="games-count-label">🎮 Semua Game</span>
+    <div class="divider-line right"></div>
+  </div>
+  <div class="games-section">
+    <div class="games-grid" id="games-container"></div>
+    <div class="empty" id="empty-state">Tidak ada game yang ditemukan 😢</div>
+  </div>
+
+  <footer>
+    <p>© 2025 <span>PSPZone</span> — Semua game tersedia untuk keperluan pribadi</p>
+  </footer>
+
+  <div class="toast" id="toast">✓ Link disalin!</div>
+
+  <!-- ══ INSTALL POPUP ══ -->
+  <div id="install-popup">
+    <div class="swipe-hint"></div>
+    <div class="popup-inner">
+      <div class="popup-icon">🎮</div>
+      <div class="popup-text">
+        <div class="popup-title">Tambah ke Beranda</div>
+        <div class="popup-sub" id="popup-sub-text"></div>
+        <div class="popup-steps" id="popup-steps"></div>
+      </div>
+      <div class="popup-actions">
+        <button class="btn-install" id="btn-install-ok">Install ↗</button>
+        <button class="btn-dismiss" id="btn-install-no">Nanti</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ════════════════════════
+       GAME DATA
+    ════════════════════════ */
+    let gamesData = [];
+
+    async function loadGames() {
+      try {
+        const res = await fetch('games.json');
+        gamesData = await res.json();
+        renderHighlights();
+        renderGames();
+      } catch (e) { console.error('Gagal memuat games.json', e); }
+    }
+
+    function buildCard(g, featured = false) {
+      const delay = Math.min(g.id * 0.04, 0.5);
+      const cover = `covers/${g.id}.png`;
+      const ribbon = featured
+        ? `<div class="featured-ribbon">★ FEATURED</div>
+         <div class="featured-top-badge">Featured</div>`
+        : '';
+      return `
+    <div class="cover-card" style="animation-delay:${delay}s">
+      ${ribbon}
+      <img class="cover-img" src="${cover}" alt="${g.title}" loading="lazy"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+      <div class="cover-fallback">
+        <div class="cf-icon">🎮</div>
+        <div class="cf-label">Cover<br>Coming Soon</div>
+      </div>
+      <div class="cover-gradient"></div>
+      <div class="cover-info">
+        <div class="cover-genre">${g.genre}</div>
+        <div class="cover-title">${g.title}</div>
+        <a href="${g.url}" target="_blank" class="cover-btn-dl">⬇ Download</a>
+        <button class="cover-btn-share" onclick='shareGame(${JSON.stringify(g)})'>↗ Salin / Bagikan</button>
+      </div>
+    </div>`;
+    }
+
+    function renderHighlights() {
+      document.getElementById('highlight-container').innerHTML =
+        gamesData.filter(g => g.highlight).map(g => buildCard(g, true)).join('');
+    }
+
+    function renderGames() { renderGameList(gamesData.filter(g => !g.highlight)); }
+
+    function renderGameList(list) {
+      const c = document.getElementById('games-container');
+      const empty = document.getElementById('empty-state');
+      document.getElementById('games-count-label').textContent = `🎮 Game (${list.length})`;
+      if (!list.length) { c.innerHTML = ''; empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      c.innerHTML = list.map(g => buildCard(g, false)).join('');
+    }
+
+    function shareGame(game) {
+      const text = `🎮 ${game.title} — Download game PSP ini!\n${game.url}`;
+      if (navigator.share) {
+        navigator.share({ title: game.title, text: `Download ${game.title}`, url: game.url })
+          .catch(() => copyText(text));
+      } else { copyText(text); }
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text)
+        .then(() => showToast('📋 Link berhasil disalin!'))
+        .catch(() => showToast('❌ Gagal menyalin'));
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    /* ════════════════════════
+       SERVICE WORKER
+    ════════════════════════ */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => { });
+      });
+    }
+
+    /* ════════════════════════════════════════
+       INSTALL POPUP — MANUAL (100% semua browser)
+  
+       Logika deteksi browser:
+       1. Chrome/Edge Android  → beforeinstallprompt (native)
+       2. Safari iOS           → instruksi manual Share → Add to Home Screen
+       3. Chrome/Edge PC       → beforeinstallprompt (native)
+       4. Browser lain         → instruksi teks umum
+    ════════════════════════════════════════ */
+    const popup = document.getElementById('install-popup');
+    const DISMISS_KEY = 'psp_install_dismissed';
+    let deferredPrompt = null;
+
+    /* ── Deteksi browser & OS ── */
+    const ua = navigator.userAgent;
+    const isIOS = /iphone|ipad|ipod/i.test(ua);
+    const isSafari = /safari/i.test(ua) && !/chrome/i.test(ua);
+    const isChrome = /chrome/i.test(ua) && !/edg/i.test(ua);
+    const isEdge = /edg/i.test(ua);
+    const isAndroid = /android/i.test(ua);
+
+    /* Sudah standalone (sudah terinstall) — jangan tampilkan */
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+
+    /* ── Isi konten popup sesuai browser ── */
+    function setPopupContent() {
+      const subEl = document.getElementById('popup-sub-text');
+      const stepsEl = document.getElementById('popup-steps');
+      const btnOk = document.getElementById('btn-install-ok');
+
+      if (isIOS && isSafari) {
+        // Safari iOS — harus manual
+        subEl.innerHTML = 'Buka di <span>Safari</span>, lalu ikuti langkah:';
+        stepsEl.innerHTML = `
+        <div class="pstep">1. Ketuk ikon <span>Bagikan</span> (kotak + panah atas) di bawah layar</div>
+        <div class="pstep">2. Pilih <span>"Tambahkan ke Layar Utama"</span></div>
+        <div class="pstep">3. Ketuk <span>Tambahkan</span> — selesai! 🎉</div>`;
+        btnOk.textContent = 'Mengerti ✓';
+        btnOk.addEventListener('click', () => hidePopup(true));
+
+      } else if (deferredPrompt) {
+        // Chrome/Edge — bisa native install
+        subEl.innerHTML = 'Install <span>PSPZone</span> langsung ke layar utama HP kamu — sekali ketuk!';
+        stepsEl.innerHTML = '';
+        btnOk.textContent = 'Install Sekarang ↗';
+        btnOk.addEventListener('click', async () => {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          hidePopup(true);
+        });
+
+      } else {
+        // Fallback umum
+        subEl.innerHTML = 'Tambah <span>PSPZone</span> ke beranda HP kamu:';
+        stepsEl.innerHTML = `
+        <div class="pstep">1. Ketuk menu <span>⋮</span> atau <span>⋯</span> di browser</div>
+        <div class="pstep">2. Pilih <span>"Add to Home Screen"</span> atau<br><span>"Tambahkan ke Layar Utama"</span></div>`;
+        btnOk.textContent = 'Mengerti ✓';
+        btnOk.addEventListener('click', () => hidePopup(true));
+      }
+    }
+
+    /* ── Tangkap native prompt (Chrome/Edge) ── */
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    /* ── Sudah terinstall → sembunyikan selamanya ── */
+    window.addEventListener('appinstalled', () => {
+      hidePopup(true);
+    });
+
+    /* ── Tampilkan popup ── */
+    function showPopup() {
+      if (isStandalone) return;                          // sudah installed
+      if (localStorage.getItem(DISMISS_KEY)) return;    // sudah pernah dismiss
+      setPopupContent();
+      popup.style.display = 'flex';
+      popup.offsetHeight; // force reflow
+      popup.classList.add('visible');
+      initSwipe();
+    }
+
+    /* ── Sembunyikan popup ── */
+    function hidePopup(saveDismiss = true) {
+      popup.classList.add('dismissing');
+      if (saveDismiss) localStorage.setItem(DISMISS_KEY, '1');
+      setTimeout(() => {
+        popup.style.display = 'none';
+        popup.classList.remove('visible', 'dismissing');
+      }, 380);
+    }
+
+    /* ── Tombol Nanti ── */
+    document.getElementById('btn-install-no').addEventListener('click', () => hidePopup(true));
+
+    /* ── Tampilkan setelah 2.5 detik ── */
+    window.addEventListener('load', () => {
+      setTimeout(showPopup, 2500);
+    });
+
+    /* ════════════════════════
+       SWIPE TO DISMISS (geser kanan)
+    ════════════════════════ */
+    function initSwipe() {
+      let startX = 0, startY = 0, curX = 0, dragging = false;
+      const THRESHOLD = 90;
+
+      function onStart(e) {
+        const p = e.touches ? e.touches[0] : e;
+        startX = p.clientX; startY = p.clientY; curX = 0;
+        dragging = true;
+        popup.classList.add('swiping');
+      }
+
+      function onMove(e) {
+        if (!dragging) return;
+        const p = e.touches ? e.touches[0] : e;
+        const dx = p.clientX - startX;
+        const dy = Math.abs(p.clientY - startY);
+        if (dy > Math.abs(dx) && Math.abs(dx) < 10) { dragging = false; return; }
+        curX = dx;
+        if (dx > 0) {
+          popup.style.transform = `translateX(calc(-50% + ${dx}px))`;
+          popup.style.opacity = Math.max(0, 1 - dx / 180);
+          if (e.cancelable) e.preventDefault();
+        }
+      }
+
+      function onEnd() {
+        if (!dragging) return;
+        dragging = false;
+        popup.classList.remove('swiping');
+        if (curX > THRESHOLD) {
+          popup.style.transition = 'transform 0.28s ease, opacity 0.28s ease';
+          popup.style.transform = 'translateX(calc(-50% + 160%))';
+          popup.style.opacity = '0';
+          localStorage.setItem(DISMISS_KEY, '1');
+          setTimeout(() => {
+            popup.style.cssText = '';
+            popup.style.display = 'none';
+            popup.classList.remove('visible');
+          }, 300);
+        } else {
+          popup.style.transition = 'transform 0.3s cubic-bezier(0.34,1.26,0.64,1), opacity 0.3s ease';
+          popup.style.transform = 'translateX(-50%)';
+          popup.style.opacity = '1';
+          setTimeout(() => { popup.style.transition = ''; }, 320);
+        }
+      }
+
+      popup.addEventListener('touchstart', onStart, { passive: true });
+      popup.addEventListener('touchmove', onMove, { passive: false });
+      popup.addEventListener('touchend', onEnd);
+      popup.addEventListener('mousedown', onStart);
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onEnd);
+    }
+
+    /* ════════════════════════
+       INIT
+    ════════════════════════ */
+    loadGames();
+  </script>
+</body>
+
+</html>

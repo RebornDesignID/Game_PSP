@@ -1,0 +1,183 @@
+[
+  {
+    "id": 1,
+    "title": "God of War: Ghost of Sparta",
+    "genre": "Action Adventure",
+    "highlight": true,
+    "cover": "https://i.imgur.com/placeholder.png",
+    "emoji": "⚔️",
+    "color": "#c0392b",
+    "url": "https://www.mediafire.com/file/m08mx7h6jdwruur/God_of_War__Ghost_of_Sparta.zip.7z/file"
+  },
+  {
+    "id": 2,
+    "title": "Assassin's Creed: Bloodlines",
+    "genre": "Action Stealth",
+    "highlight": true,
+    "emoji": "🗡️",
+    "color": "#8e44ad",
+    "url": "https://www.mediafire.com/file/h9qqz4alwcrsb3v/Assassins_Creed_-_Bloodlines_%2528USA%2529_%2528EnFrDeEsIt%2529.zip/file"
+  },
+  {
+    "id": 20,
+    "title": "Tekken: Dark Resurrection",
+    "genre": "Fighting",
+    "highlight": true,
+    "emoji": "🥊",
+    "color": "#e67e22",
+    "url": "https://www.mediafire.com/file/mhiktnqpndrk7nm/Tekken_6_%2528USA%2529_%2528EnJaFrDeEsItKoRu%2529.zip/file"
+  },
+  {
+    "id": 10,
+    "title": "Tekken 6",
+    "genre": "Fighting",
+    "highlight": false,
+    "emoji": "👊",
+    "color": "#2980b9",
+    "url": "https://drive.google.com/file/d/TEKKEN6_ID/view"
+  },
+  {
+    "id": 13,
+    "title": "God of War: Chains of Olympus",
+    "genre": "Action Adventure",
+    "highlight": false,
+    "emoji": "🔱",
+    "color": "#c0392b",
+    "url": "https://www.mediafire.com/file/71z4j95flh608iu/God_of_War_-_Chains_of_Olympus_%2528USA%2529.zip/file"
+  },
+  {
+    "id": 16,
+    "title": "Naruto: Ultimate Ninja Heroes",
+    "genre": "Fighting",
+    "highlight": false,
+    "emoji": "🍃",
+    "color": "#f39c12",
+    "url": "https://www.mediafire.com/file/y7isri2dc3awexc/Naruto_Ultimate_Ninja_Heroes_%2528_USA_%2529.zip/file"
+  },
+  {
+    "id": 19,
+    "title": "Naruto: Ultimate Ninja Heroes 3",
+    "genre": "Fighting",
+    "highlight": false,
+    "emoji": "🌀",
+    "color": "#f39c12",
+    "url": "https://www.mediafire.com/file/95blxm8qwmxr4u2/Naruto_Shippuden_-_Ultimate_Ninja_Heroes_3_%2528USA%2529.zip/file"
+  },
+  {
+    "id": 9,
+    "title": "Naruto: Ultimate Ninja Impact",
+    "genre": "Action",
+    "highlight": false,
+    "emoji": "💨",
+    "color": "#e67e22",
+    "url": "https://www.mediafire.com/file/z65y47zw9p7j893/Naruto_Shippuden_-_Ultimate_Ninja_Impact_%2528USA%2529.zip/file"
+  },
+  {
+    "id": 5,
+    "title": "Mortal Kombat: Unchained",
+    "genre": "Fighting",
+    "highlight": false,
+    "emoji": "💀",
+    "color": "#27ae60",
+    "url": "https://www.mediafire.com/file/yv3dcxi01ib5iob/Mortal_Kombat_-_Unchained_%2528USA%2529.zip/file"
+  },
+  {
+    "id": 18,
+    "title": "NBA Street Showdown",
+    "genre": "Sports",
+    "highlight": false,
+    "emoji": "🏀",
+    "color": "#e74c3c",
+    "url": "https://www.mediafire.com/file/45x15vp0bpr6cqu/NBA_Street_Showdown_%2528USA%2529.zip/file"
+  },
+  {
+    "id": 4,
+    "title": "Street Fighter Alpha 3 Max",
+    "genre": "Fighting",
+    "highlight": false,
+    "emoji": "🥋",
+    "color": "#3498db",
+    "url": "https://www.mediafire.com/file/nllp3k0xwfx614j/Street_Fighter_Alpha_3_Max_%2528USA%2529.zip/file"
+  },
+  {
+    "id": 17,
+    "title": "LEGO Batman: The Videogame",
+    "genre": "Action",
+    "highlight": false,
+    "emoji": "🦇",
+    "color": "#2c3e50",
+    "url": "https://www.mediafire.com/file/k787o6dkvtjmfux/LEGO_Batman_-_The_Videogame_%2528USA%2529_%2528EnFrEs%2529.zip/file"
+  },
+  {
+    "id": 6,
+    "title": "Ben 10: Protector of Earth",
+    "genre": "Action",
+    "highlight": false,
+    "emoji": "🔋",
+    "color": "#16a085",
+    "url": "https://www.mediafire.com/file/x8s8m0mu3jrdpr6/Ben_10_-_Protector_of_Earth_%2528USA%2529.zip/file "
+  },
+  {
+    "id": 14,
+    "title": "FIFA Street 2",
+    "genre": "Sports",
+    "highlight": false,
+    "emoji": "⚽",
+    "color": "#27ae60",
+    "url": "https://www.mediafire.com/file/pc8y9otvvxpiurx/FIFA_Street_2_%2528USA%2529.zip/file"
+  },
+  {
+    "id": 15,
+    "title": "Harvest Moon: Boy & Girl",
+    "genre": "Simulation",
+    "highlight": false,
+    "emoji": "🌾",
+    "color": "#f1c40f",
+    "url": "https://www.mediafire.com/file/4e1vukqhpzl1kx5/Harvest_Moon_-_Boy__Girl_%2528USA%2529.zip/file"
+  },
+  {
+    "id": 11,
+    "title": "Bleach: Heat the Soul",
+    "genre": "Fighting",
+    "highlight": false,
+    "emoji": "⚡",
+    "color": "#1abc9c",
+    "url": "https://www.mediafire.com/file/12aokp9e9zri8wj/Bleach_-_Heat_the_Soul_7_%2528Japan%2529.zip/file"
+  },
+  {
+    "id": 3,
+    "title": "Def Jam: Fight for NY",
+    "genre": "Fighting",
+    "highlight": false,
+    "emoji": "🎤",
+    "color": "#8e44ad",
+    "url": "https://www.mediafire.com/file/nm575aull7ug3up/Def_Jam_-_Fight_for_NY_-_The_Takeover_%2528USA%2529.zip/file"
+  },
+  {
+    "id": 7,
+    "title": "GTA: Vice City Stories",
+    "genre": "Open World",
+    "highlight": false,
+    "emoji": "🔫",
+    "color": "#e74c3c",
+    "url": "https://drive.google.com/file/d/GTA_VCS_ID/view"
+  },
+  {
+    "id": 8,
+    "title": "Kamen Rider: Super Climax Heroes",
+    "genre": "Fighting",
+    "highlight": false,
+    "emoji": "🦸",
+    "color": "#2980b9",
+    "url": "https://www.mediafire.com/file/a22zb2nd3yxqs5u/Kamen_Rider_-_Super_Climax_Heroes_%2528Japan%2529.zip/file"
+  },
+  {
+    "id": 12,
+    "title": "The Sims 2: Castaway",
+    "genre": "Simulation",
+    "highlight": false,
+    "emoji": "🏝️",
+    "color": "#16a085",
+    "url": "https://www.mediafire.com/file/flv1qdnv4779mab/Sims_2_The_-_Castaway_%2528USA%2529_%2528EnFrDeEsItNlPt%2529.zip/file"
+  }
+]

@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RebronStore — PSP Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #080c14;
+      --surface: #0e1420;
+      --border:  #1c2640;
+      --gold:    #f0c040;
+      --gold2:   #ffaa00;
+      --text:    #dce6ff;
+      --muted:   #6a7fa8;
+      --red:     #e05555;
+      --green:   #3ecf8e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      overflow-x: hidden;
+    }
+
+    /* scanline */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* glow bg */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% 0%, rgba(240,192,64,0.05), transparent 70%),
+        radial-gradient(ellipse 40% 40% at 10% 80%, rgba(30,100,255,0.04), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ══════════════════════
+       AUTH SCREEN
+    ══════════════════════ */
+    #auth-screen {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .auth-box {
+      width: 100%;
+      max-width: 360px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 36px 28px 32px;
+      position: relative;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    /* gold top bar */
+    .auth-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--gold2), transparent);
+    }
+
+    .auth-logo {
+      font-size: 40px;
+      text-align: center;
+      margin-bottom: 14px;
+      line-height: 1;
+    }
+
+    .auth-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 18px;
+      font-weight: 900;
+      color: #fff;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .auth-title span { color: var(--gold); }
+
+    .auth-sub {
+      text-align: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 6px 0 24px;
+    }
+
+    .auth-badge {
+      display: inline-block;
+      background: rgba(240,192,64,0.1);
+      border: 1px solid rgba(240,192,64,0.3);
+      color: var(--gold);
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 3px 12px;
+      margin-bottom: 20px;
+    }
+
+    .input-wrap {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 13px 44px 13px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 4px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .auth-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(240,192,64,0.08);
+    }
+
+    .auth-input::placeholder {
+      letter-spacing: 1px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .toggle-pw {
+      position: absolute; right: 13px; top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer; font-size: 15px;
+      opacity: 0.4; transition: opacity 0.2s;
+      user-select: none;
+    }
+    .toggle-pw:hover { opacity: 1; }
+
+    .auth-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--gold);
+      color: #111;
+      font-family: 'Orbitron', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .auth-btn:hover {
+      background: #fff;
+      box-shadow: 0 0 28px rgba(240,192,64,0.4);
+    }
+
+    .auth-btn:active { opacity: 0.85; }
+
+    .auth-msg {
+      margin-top: 12px;
+      padding: 9px 14px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      letter-spacing: 1px;
+      border-radius: 2px;
+      display: none;
+      text-align: center;
+    }
+
+    .auth-msg.error {
+      background: rgba(224,85,85,0.1);
+      border: 1px solid rgba(224,85,85,0.35);
+      color: var(--red);
+    }
+
+    .auth-msg.warning {
+      background: rgba(240,192,64,0.08);
+      border: 1px solid rgba(240,192,64,0.3);
+      color: var(--gold);
+    }
+
+    /* ══════════════════════
+       MAIN CONTENT
+    ══════════════════════ */
+    #main-screen {
+      display: none;
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      text-align: center;
+      padding: 8px 0 32px;
+    }
+
+    .site-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--green);
+      border: 1px solid rgba(62,207,142,0.3);
+      background: rgba(62,207,142,0.06);
+      padding: 4px 14px;
+      margin-bottom: 14px;
+    }
+
+    .site-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .site-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(28px, 7vw, 42px);
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -1px;
+      line-height: 1;
+      text-shadow: 0 0 40px rgba(240,192,64,0.3);
+    }
+
+    .site-title span { color: var(--gold); }
+
+    .site-sub {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 20px;
+    }
+
+    .divider-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+    }
+
+    .divider-line.right {
+      background: linear-gradient(90deg, transparent, var(--gold));
+    }
+
+    .divider-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--gold);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* ── MENU CARDS ── */
+    .menu-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .menu-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 3px;
+      background: var(--gold);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.25s ease;
+    }
+
+    .menu-card:hover::before { transform: scaleY(1); }
+
+    .menu-card:hover {
+      border-color: rgba(240,192,64,0.4);
+      transform: translateX(4px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .menu-card.dashed { border-style: dashed; }
+
+    .card-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .card-icon {
+      width: 48px; height: 48px;
+      background: rgba(240,192,64,0.08);
+      border: 1px solid rgba(240,192,64,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .card-icon.red {
+      background: rgba(224,85,85,0.08);
+      border-color: rgba(224,85,85,0.2);
+    }
+
+    .card-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+
+    .card-desc {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+
+    /* countdown / arrow */
+    .card-right {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .arrow {
+      font-family: 'Orbitron', monospace;
+      font-size: 14px;
+      color: var(--border);
+      transition: color 0.2s;
+    }
+
+    .menu-card:hover .arrow { color: var(--gold); }
+
+    .cd-badge {
+      display: none;
+      background: var(--gold);
+      color: #111;
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+      min-width: 44px;
+      text-align: center;
+    }
+
+    .loading { pointer-events: none; opacity: 0.7; }
+    .loading .arrow   { display: none; }
+    .loading .cd-badge { display: block; }
+
+    /* ── TUTORIAL ── */
+    .tutorial-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px 20px;
+      margin-top: 8px;
+      position: relative;
+    }
+
+    .tutorial-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+    }
+
+    .tutorial-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .step:last-of-type { margin-bottom: 0; }
+
+    .step-num {
+      width: 26px; height: 26px;
+      background: rgba(240,192,64,0.1);
+      border: 1px solid rgba(240,192,64,0.3);
+      color: var(--gold);
+      font-family: 'Orbitron', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-text {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .step-text strong { color: #fff; }
+
+    .step-text code {
+      background: rgba(240,192,64,0.1);
+      color: var(--gold);
+      padding: 1px 7px;
+      font-size: 12px;
+      font-family: monospace;
+    }
+
+    /* ── VIDEO ── */
+    .video-wrap {
+      margin-top: 22px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .video-header {
+      padding: 10px 14px;
+      background: rgba(255,0,0,0.06);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text);
+    }
+
+    .yt-dot {
+      width: 10px; height: 10px;
+      background: #ff0000;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .video-frame {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+    }
+
+    .video-frame iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      text-align: center;
+      margin-top: 28px;
+      padding-bottom: 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--muted);
+    }
+
+    .site-footer span { color: var(--gold); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ AUTH SCREEN ══ -->
+  <div id="auth-screen">
+    <div class="auth-box">
+      <div class="auth-logo">🎮</div>
+      <div class="auth-title">REBRON<span>STORE</span></div>
+      <div class="auth-sub">Masukkan sandi untuk melanjutkan</div>
+      <div style="text-align:center;margin-bottom:20px;">
+        <span class="auth-badge">🔒 1 PERANGKAT · 24 JAM</span>
+      </div>
+      <div class="input-wrap">
+        <input
+          class="auth-input"
+          type="password"
+          id="pass-input"
+          placeholder="Masukkan sandi"
+          onkeydown="if(event.key==='Enter') validatePass()"
+          autocomplete="off"
+        />
+        <span class="toggle-pw" onclick="togglePw()">👁</span>
+      </div>
+      <button class="auth-btn" onclick="validatePass()">Buka Akses</button>
+      <div class="auth-msg error"   id="msg-error"></div>
+      <div class="auth-msg warning" id="msg-blocked"></div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN SCREEN ══ -->
+  <div id="main-screen">
+
+    <div class="site-header">
+      <div><span class="site-badge">Akses Aktif</span></div>
+      <div class="site-title">REBRON<span>STORE</span></div>
+      <div class="site-sub">PSP Digital Collection</div>
+    </div>
+
+    <!-- MENU -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-label">Menu</span>
+      <div class="divider-line right"></div>
+    </div>
+
+    <div class="menu-card" onclick="handleNav(this, 'games.html')">
+      <div class="card-left">
+        <div class="card-icon">🎮</div>
+        <div>
+          <div class="card-label">Koleksi Game PSP</div>
+          <div class="card-desc">20 Game — Fighting, Action, RPG & lebih</div>
+        </div>
+      </div>
+      <div class="card-right">
+        <div class="cd-badge">3s</div>
+        <div class="arrow">❯</div>
+      </div>
+    </div>
+
+    <div class="menu-card dashed" onclick="handleDownload(this, 'https://www.mediafire.com/')">
+      <div class="card-left">
+        <div class="card-icon red">🎁</div>
+        <div>
+          <div class="card-label">Bonus Spesial</div>
+          <div class="card-desc">Koleksi tambahan eksklusif</div>
+        </div>
+      </div>
+      <div class="card-right">
+        <div class="cd-badge">3s</div>
+        <div class="arrow">❯</div>
+      </div>
+    </div>
+
+    <!-- TUTORIAL -->
+    <div class="divider" style="margin-top:28px;">
+      <div class="divider-line"></div>
+      <span class="divider-label">Cara Install</span>
+      <div class="divider-line right"></div>
+    </div>
+
+    <div class="tutorial-box">
+      <div class="tutorial-title">📖 Cara Install Game PSP</div>
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Klik <strong>Koleksi Game PSP</strong>, pilih game, klik <strong>Download</strong>. File berformat <code>.iso</code> atau <code>.cso</code>.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Jika file berformat <code>.zip</code> atau <code>.rar</code>, ekstrak dulu pakai <strong>WinRAR</strong> / <strong>ZArchiver</strong>.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Install <strong>PPSSPP</strong> gratis di Play Store / App Store / ppsspp.org untuk Android, iOS, atau PC.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">Buka PPSSPP → pilih <code>Load</code> → arahkan ke file game → tap untuk mulai bermain.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-text">Untuk PSP asli (CFW): salin file ke memori stick folder <code>PSP/GAME/</code>.</div>
+      </div>
+
+      <div class="video-wrap">
+        <div class="video-header">
+          <div class="yt-dot"></div>
+          Video Tutorial — Cara Install PPSSPP & Game PSP
+        </div>
+        <div class="video-frame">
+          <iframe
+            src="https://www.youtube.com/embed/Ry6BuKG2HvM"
+            title="Tutorial Install PPSSPP"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+    <div class="site-footer">
+      © 2026 <span>RebronStore.id</span> — Aman & Legal
+    </div>
+
+  </div><!-- /main-screen -->
+
+<script>
+  /* ── CONFIG ── */
+  const KEY_PASS    = "12ENAM60";
+  const EXPIRE_MS   = 24 * 60 * 60 * 1000;  // 24 jam
+  const DELAY_SEC   = 3;                      // countdown detik
+  const MAX_TRY     = 5;                      // maks salah
+  const COOL_MS     = 10 * 60 * 1000;         // cooldown 10 menit
+
+  /* ── DEVICE ID (canvas fingerprint) ── */
+  function getDeviceId() {
+    try {
+      const c = document.createElement('canvas');
+      const g = c.getContext('2d');
+      g.font = '13px Arial';
+      g.fillStyle = '#f0c040';
+      g.fillText('RebronStore🎮', 2, 14);
+      const h0 = c.toDataURL().slice(-48);
+      const raw = navigator.userAgent + Intl.DateTimeFormat().resolvedOptions().timeZone + h0;
+      let h = 0;
+      for (let i = 0; i < raw.length; i++) h = Math.imul(31, h) + raw.charCodeAt(i) | 0;
+      return 'rb_' + Math.abs(h).toString(36);
+    } catch(e) { return 'rb_def'; }
+  }
+
+  /* ── INIT — cek auth tersimpan ── */
+  window.onload = function() {
+    const did  = getDeviceId();
+
+    // Cek cooldown dulu
+    const coolUntil = +localStorage.getItem('cool_' + did) || 0;
+    if (Date.now() < coolUntil) {
+      showBlocked(coolUntil);
+      return;
+    }
+
+    // Cek sesi aktif
+    const saved = localStorage.getItem('auth_' + did);
+    if (saved) {
+      try {
+        const { ts } = JSON.parse(saved);
+        if (Date.now() - ts < EXPIRE_MS) { showMain(); return; }
+      } catch(e) {}
+      localStorage.removeItem('auth_' + did);
+    }
+  };
+
+  /* ── VALIDASI SANDI ── */
+  function validatePass() {
+    const did = getDeviceId();
+
+    // Blokir jika cooldown aktif
+    const coolUntil = +localStorage.getItem('cool_' + did) || 0;
+    if (Date.now() < coolUntil) { showBlocked(coolUntil); return; }
+
+    const val = document.getElementById('pass-input').value.trim();
+
+    if (!val) return; // kosong, abaikan
+
+    if (val === KEY_PASS) {
+      // Benar — simpan sesi untuk device ini
+      localStorage.setItem('auth_' + did, JSON.stringify({ ts: Date.now() }));
+      localStorage.removeItem('att_'  + did);
+      localStorage.removeItem('cool_' + did);
+      showMain();
+    } else {
+      // Salah — tambah counter
+      const att = (+localStorage.getItem('att_' + did) || 0) + 1;
+      localStorage.setItem('att_' + did, att);
+
+      if (att >= MAX_TRY) {
+        const until = Date.now() + COOL_MS;
+        localStorage.setItem('cool_' + did, until);
+        localStorage.removeItem('att_' + did);
+        showBlocked(until);
+      } else {
+        showError(`❌ Sandi salah (${att}/${MAX_TRY} percobaan)`);
+        document.getElementById('pass-input').value = '';
+        document.getElementById('pass-input').focus();
+      }
+    }
+  }
+
+  function showError(txt) {
+    hide('msg-blocked');
+    const el = document.getElementById('msg-error');
+    el.textContent = txt;
+    el.style.display = 'block';
+  }
+
+  function showBlocked(until) {
+    hide('msg-error');
+    const m = Math.ceil((until - Date.now()) / 60000);
+    const el = document.getElementById('msg-blocked');
+    el.textContent = `⏳ Terlalu banyak percobaan. Coba lagi dalam ${m} menit.`;
+    el.style.display = 'block';
+    document.getElementById('pass-input').disabled = true;
+    document.querySelector('.auth-btn').disabled = true;
+
+    // Auto-refresh countdown tiap menit
+    const iv = setInterval(() => {
+      if (Date.now() >= until) {
+        clearInterval(iv);
+        document.getElementById('pass-input').disabled = false;
+        document.querySelector('.auth-btn').disabled = false;
+        hide('msg-blocked');
+        return;
+      }
+      const left = Math.ceil((until - Date.now()) / 60000);
+      el.textContent = `⏳ Terlalu banyak percobaan. Coba lagi dalam ${left} menit.`;
+    }, 10000);
+  }
+
+  function showMain() {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('main-screen').style.display = 'block';
+  }
+
+  function hide(id) { document.getElementById(id).style.display = 'none'; }
+
+  /* ── TOGGLE PASSWORD ── */
+  function togglePw() {
+    const i = document.getElementById('pass-input');
+    i.type = i.type === 'password' ? 'text' : 'password';
+  }
+
+  /* ── COUNTDOWN 3 DETIK ── */
+  function startCountdown(el, done) {
+    el.classList.add('loading');
+    const badge = el.querySelector('.cd-badge');
+    let left = DELAY_SEC;
+    badge.textContent = left + 's';
+    const iv = setInterval(() => {
+      left--;
+      if (left <= 0) {
+        clearInterval(iv);
+        el.classList.remove('loading');
+        done();
+      } else {
+        badge.textContent = left + 's';
+      }
+    }, 1000);
+  }
+
+  function handleNav(el, url) {
+    startCountdown(el, () => window.location.href = url);
+  }
+
+  function handleDownload(el, url) {
+    startCountdown(el, () => window.open(url, '_blank'));
+  }
+</script>
+</body>
+</html> 
